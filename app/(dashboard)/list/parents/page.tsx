@@ -1,3 +1,4 @@
+import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import { Table } from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
@@ -64,9 +65,13 @@ const ParentListPage = () => {
                             </button>
                         </Link>
                         {role === "admin" && (
-                            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lPurple">
-                                <Image src="/delete.png" alt="" width={16} height={16} />
-                            </button>
+                            // <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lPurple">
+                            //     <Image src="/delete.png" alt="" width={16} height={16} />
+                            // </button>
+                            <>
+                                <FormModal table="parent" type="delete" />
+                                <FormModal table="parent" type="update" data={item} />
+                            </>
                         )}
                     </div>
                 </td>
@@ -87,9 +92,10 @@ const ParentListPage = () => {
                             <Image alt="" src="/sort.png" width={14} height={14} />
                         </button>
                         {
-                            role === "admin" && <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lYellow">
-                                <Image alt="" src="/plus.png" width={14} height={14} />
-                            </button>
+                            role === "admin" && <FormModal table="parent" type="create" />
+                            // <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lYellow">
+                            //     <Image alt="" src="/plus.png" width={14} height={14} />
+                            // </button>
                         }
                     </div>
                 </div>
