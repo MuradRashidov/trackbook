@@ -5,7 +5,7 @@ import TableSearch from "@/components/TableSearch";
 import { ITEM_PER_PAGE } from "@/lib/constants";
 import { role, teachersData } from "@/lib/data";
 import prisma from "@/lib/prisma";
-import { Class, Subject, Teacher } from "@prisma/client";
+import { Class, Prisma, Subject, Teacher } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -51,19 +51,37 @@ type TeacherList = Teacher & { subjects: Subject[] } & { classes: Class[]};
 const TeacherListPage = async ({searchParams}:{searchParams: { [key: string]: string | undefined}}) => {
     console.log("Teachers: ", searchParams);
     const { page, ...queryParams } = searchParams;
-    const classId = queryParams.classId ? parseInt(queryParams.classId) : undefined;
+    //const classId = queryParams.classId ? parseInt(queryParams.classId) : undefined;
+    const query: Prisma.TeacherWhereInput = {
+
+    }
+
+    if (queryParams) {
+        for(const [key,value] of Object.entries(queryParams)){
+            if(!query) return;
+            switch (key) {
+                case "classId":
+                query.lessons = {
+                    some:  {
+                        classId: parseInt(value!)
+                    }
+                 }
+                 break;
+                 case "search":
+                 query.name = { contains: value, mode:"insensitive"}
+                 
+            }
+
+        }
+    }
 
     const p = page ? +page : 1
     const [data,count] = await prisma.$transaction([
-        prisma.teacher.findMany({ where:{
-            lessons: {some: {classId}}
-        },include:{
+        prisma.teacher.findMany({ where:query,include:{
             classes: true,
             subjects: true
         }, take:ITEM_PER_PAGE, skip: ITEM_PER_PAGE*(p - 1)}),
-        prisma.teacher.count({where:{
-            lessons: {some: {classId}}
-        }})
+        prisma.teacher.count({where:query})
     ]);
     
 
